@@ -72,12 +72,4 @@ ifeq ($(BOARD_USE_XIAOMI_MIONE_HARDWARE),true)
     LOCAL_CFLAGS += -DXIAOMI_MIONE_WIFI
 endif
 
-ifeq ($(BOARD_USE_XIAOMI_MITWO_HARDWARE),true)
-    LOCAL_CFLAGS += -DXIAOMI_MITWO_WIFI
-    # Hack for build
-    $(shell mkdir -p $(OUT)/obj/SHARED_LIBRARIES/libqminvapi_intermediates)
-    $(shell touch $(OUT)/obj/SHARED_LIBRARIES/libqminvapi_intermediates/export_includes)
-    LOCAL_SHARED_LIBRARIES += libqminvapi
-endif
-
 LOCAL_SHARED_LIBRARIES += libnetutils libreadmac

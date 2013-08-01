@@ -168,19 +168,9 @@ static unsigned char dummy_key[21] = { 0x02, 0x11, 0xbe, 0x33, 0x43, 0x35,
                                        0x68, 0x47, 0x84, 0x99, 0xa9, 0x2b,
                                        0x1c, 0xd3, 0xee, 0xff, 0xf1, 0xe2,
                                        0xf3, 0xf4, 0xf5 };
-#ifdef XIAOMI_MIONE_WIFI
 extern char *read_mac();
 static char mac_buf[150];
 static int read_mac_ok;
-#endif
-#ifdef XIAOMI_MITWO_WIFI
-extern int qmi_nv_read_wlan_mac(char** mac);
-// read wlan mac address from modem NV
-static unsigned char wlan_addr[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-static char wcn_mac_arg[120];
-static int read_mac_ok;
-#endif
-
 /* Is either SUPPLICANT_NAME or P2P_SUPPLICANT_NAME */
 static char supplicant_name[PROPERTY_VALUE_MAX];
 /* Is either SUPP_PROP_NAME or P2P_PROP_NAME */
@@ -397,13 +387,7 @@ int wifi_load_driver()
     }
     if (insmod(DRIVER_MODULE_PATH, is_wifi_module_4330 ? mac_buf : DRIVER_MODULE_ARG) < 0) {
 #else
-#ifdef XIAOMI_MITWO_WIFI
-    if (0 == read_mac_ok)
-        read_wlan_mac_addr();
-    if (insmod(DRIVER_MODULE_PATH, wcn_mac_arg) < 0) {
-#else
     if (insmod(DRIVER_MODULE_PATH, DRIVER_MODULE_ARG) < 0) {
-#endif
 #endif
 #endif
 
@@ -1356,23 +1340,6 @@ int read_wlan_mac() {
     }
     ALOGI("Got WLAN MAC Address: %s \ ",mac_buf);
     read_mac_ok = 1;
-    return 0;
-}
-#endif
-#ifdef XIAOMI_MITWO_WIFI
-int read_wlan_mac_addr()
-{
-    char* nv_wlan_mac = NULL;
-    ALOGE("read wlan mac addr enter.");
-    qmi_nv_read_wlan_mac(&nv_wlan_mac);
-    int i;
-    for (i=0; i<6; i++) {
-        wlan_addr[i] = nv_wlan_mac[i];
-    }
-    memset(wcn_mac_arg, 0, sizeof(wcn_mac_arg));
-    sprintf(wcn_mac_arg, "mac=0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x", wlan_addr[5], wlan_addr[4], wlan_addr[3], wlan_addr[2],wlan_addr[1],wlan_addr[0]);
-    read_mac_ok = 1;
-    ALOGE("read wlan mac addr (%s) done.", wcn_mac_arg);
     return 0;
 }
 #endif
