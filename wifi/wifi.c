@@ -1040,7 +1040,7 @@ int wifi_stop_supplicant(int p2p_supported)
 int wifi_connect_on_socket_path(int index, const char *path)
 {
     char supp_status[PROPERTY_VALUE_MAX] = {'\0'};
-
+    ALOGD("wifi_connect_on_socket_path: interface_path = %s", path);
     /* Make sure supplicant is running */
     if (!property_get(supplicant_prop_name, supp_status, NULL)
             || strcmp(supp_status, "running") != 0) {
@@ -1083,11 +1083,15 @@ int wifi_connect_to_supplicant(const char *ifname)
     char path[256];
 
     if (is_primary_interface(ifname)) {
+#ifndef XIAOMI_MIONE_WIFI
         if (access(IFACE_DIR, F_OK) == 0) {
             snprintf(path, sizeof(path), "%s/%s", IFACE_DIR, primary_iface);
         } else {
+#endif
             strlcpy(path, primary_iface, sizeof(path));
+#ifndef XIAOMI_MIONE_WIFI
         }
+#endif
         return wifi_connect_on_socket_path(PRIMARY, path);
     } else {
         sprintf(path, "%s/%s", CONTROL_IFACE_PATH, ifname);
